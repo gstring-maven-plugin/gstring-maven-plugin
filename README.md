@@ -6,6 +6,8 @@ This plugin is meant to allow you to use Groovy GString template mechanism durin
 * http://groovy.codehaus.org/Groovy+Templates
 * http://groovy.codehaus.org/Strings+and+GString#StringsandGString-Strings-GStrings
 
+Big advantage of GStrings over simple pattern replacement/filtering (like the one provided by maven-resource-plugin), is that GString allow you to make branching, conditional values, and everthing else Groovy allows you to do.
+
 ## How does it work?
 
 Here is an example usage of how to use the gstring-maven-plugin
@@ -35,8 +37,6 @@ Here is an example usage of how to use the gstring-maven-plugin
 							<update_site_qualifier>%{buildQualifier}</update_site_qualifier>
 							<JOB_NAME>${JOB_NAME}</JOB_NAME>
 							<BUILD_NUMBER>${BUILD_NUMBER}</BUILD_NUMBER>
-							<PORTLET_1>27842</PORTLET_1>
-							<PORTLET_2>23303</PORTLET_2>
 						</symbols>
 					</configuration>
 				</execution>
@@ -46,7 +46,27 @@ Here is an example usage of how to use the gstring-maven-plugin
 </build>
 ```
 
-Currently, you need to build it locally to use it. But you can soon expect to be able to retrieve it from JBoss Nexus.
+You can either re-build it locally, or consume it directly from JBoss Nexus:
+```xml
+	<repositories>
+		<repository>
+			<id>jboss-releases</id>
+			<name>JBoss Releases Maven Repository</name>
+			<url>https://repository.jboss.org/nexus/content/repositories/releases/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+		<repository>
+			<id>jboss-snapshots-repository</id>
+			<name>JBoss Snapshots Repository</name>
+			<url>https://repository.jboss.org/nexus/content/repositories/snapshots/</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+```
 
 ## License
 
