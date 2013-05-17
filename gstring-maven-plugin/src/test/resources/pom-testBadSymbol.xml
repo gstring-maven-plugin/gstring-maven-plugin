@@ -24,11 +24,12 @@
       <plugin>
         <artifactId>gstring-maven-plugin</artifactId>
         <configuration>
+          <outputDirectory>target/testOutput</outputDirectory>
           <files>
               <file>${basedir}/template.txt</file>
           </files>
           <symbols>
-              <k.ey>value</k.ey>
+              <p.lace>world</p.lace>
           </symbols>
         </configuration>
       </plugin>

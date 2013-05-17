@@ -11,6 +11,7 @@
 package org.jboss.tools.maven.gstring;
 
 import java.io.File;
+import java.io.FileInputStream;
 
 import junit.framework.Assert;
 
@@ -29,6 +30,18 @@ public class ProcessTemplateFilesMojoTest extends AbstractMojoTestCase {
         ProcessTemplateFilesMojo myMojo = (ProcessTemplateFilesMojo) lookupMojo( "process-templates", pom );
         assertNotNull( myMojo );
         myMojo.execute();
+
+        File outputFile = getTestFile("target/testOutput/template.txt");
+        FileInputStream stream = new FileInputStream(outputFile);
+        byte[] bytes = new byte[(int)outputFile.length()];
+        stream.read(bytes);
+        String outputText = new String(bytes);
+        Assert.assertEquals(
+        	"Hello world !\n" +
+        	"Hello WORLD !\n\n" +
+        	"Hello WORLD (from a closure) !",
+        	outputText);
+        stream.close();
 	}
 
 	@Test
@@ -59,7 +72,7 @@ public class ProcessTemplateFilesMojoTest extends AbstractMojoTestCase {
         	myMojo.execute();
         	Assert.fail();
         } catch (MojoExecutionException ex) {
-        	Assert.assertTrue(ex.getMessage().contains("k.ey"));
+        	Assert.assertTrue(ex.getMessage().contains("p.lace"));
         }
 	}
 }

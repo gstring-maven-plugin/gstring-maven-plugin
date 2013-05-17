@@ -15,7 +15,10 @@ Here is an example usage of how to use the gstring-maven-plugin
 Given a template named 'results.html' with the content:
 
 ```xml
-Hello ${place}!
+Hello ${place} !
+Hello ${place.toUpperCase()} !
+<% /* define closures */ upper = { arg -> arg.toUpperCase() + " (from a closure)" } %>
+Hello ${upper place} !
 ```
 
 In your pom.xml:
@@ -39,7 +42,7 @@ In your pom.xml:
 							<file>results.html</file>
 						</files>
 						<symbols>
-							<place>World</place>
+							<place>world</place>
 						</symbols>
 					</configuration>
 				</execution>
@@ -52,7 +55,10 @@ In your pom.xml:
 This will create `${project.build.directory}/results.html` that contains
 
 ```
-Hello World!
+Hello world !
+Hello WORLD !
+
+Hello WORLD (from a closure) !
 ```
 
 You can either re-build it locally, or consume it directly from JBoss Nexus:

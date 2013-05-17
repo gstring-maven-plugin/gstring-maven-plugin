@@ -1,1 +1,4 @@
-the key is ${key}
+Hello ${place} !
+Hello ${place.toUpperCase()} !
+<% /* define closures */ upper = { arg -> arg.toUpperCase() + " (from a closure)" } %>
+Hello ${upper place} !

@@ -23,12 +23,12 @@
 			<plugin>
 				<artifactId>gstring-maven-plugin</artifactId>
 				<configuration>
-					<outputDirectory>${project.build.directory}</outputDirectory>
+					<outputDirectory>target/testOutput</outputDirectory>
 					<files>
 						<file>${basedir}/no_template.txt</file>
 					</files>
 					<symbols>
-						<key>value</key>
+						<place>world</place>
 					</symbols>
 				</configuration>
 			</plugin>
