@@ -26,7 +26,7 @@ In your pom.xml:
 		<plugin>
 			<groupId>org.jboss.tools.maven</groupId>
 			<artifactId>gstring-maven-plugin</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>1.0.0</version>
 			<executions>
 				<execution>
 					<id>create-results-html</id>
