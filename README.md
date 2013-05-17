@@ -12,6 +12,14 @@ Big advantage of GStrings over simple pattern replacement/filtering (like the on
 
 Here is an example usage of how to use the gstring-maven-plugin
 
+Given a template named 'results.html' with the content:
+
+```xml
+Hello ${place}!
+```
+
+In your pom.xml:
+
 ```xml
 <build>
 	<plugins>
@@ -31,12 +39,7 @@ Here is an example usage of how to use the gstring-maven-plugin
 							<file>results.html</file>
 						</files>
 						<symbols>
-							<update_site_description>${update.site.description}</update_site_description>
-							<TARGET_PLATFORM_VERSION>${TARGET_PLATFORM_VERSION}</TARGET_PLATFORM_VERSION>
-							<TARGET_PLATFORM_VERSION_MAXIMUM>${TARGET_PLATFORM_VERSION_MAXIMUM}</TARGET_PLATFORM_VERSION_MAXIMUM>
-							<update_site_qualifier>%{buildQualifier}</update_site_qualifier>
-							<JOB_NAME>${JOB_NAME}</JOB_NAME>
-							<BUILD_NUMBER>${BUILD_NUMBER}</BUILD_NUMBER>
+							<place>World</place>
 						</symbols>
 					</configuration>
 				</execution>
@@ -44,6 +47,12 @@ Here is an example usage of how to use the gstring-maven-plugin
 		</plugin>
 	</plugins>
 </build>
+```
+
+This will create `${project.build.directory}/results.html` that contains
+
+```
+Hello World!
 ```
 
 You can either re-build it locally, or consume it directly from JBoss Nexus:
