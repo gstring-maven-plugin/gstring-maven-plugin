@@ -77,6 +77,10 @@ You can either re-build it locally, or consume it directly from JBoss Nexus:
 	</repositories>
 ```
 
+## Community
+
+A Google Group is used as a mailing-list: https://groups.google.com/forum/#!forum/gstring-maven-plugin
+
 ## License
 
 It's EPL
