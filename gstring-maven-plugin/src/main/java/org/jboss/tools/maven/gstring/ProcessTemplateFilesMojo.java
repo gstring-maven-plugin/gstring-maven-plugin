@@ -15,13 +15,18 @@ import groovy.text.GStringTemplateEngine;
 import groovy.text.Template;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
@@ -54,9 +59,13 @@ public class ProcessTemplateFilesMojo extends AbstractMojo {
 
 	/**
 	 * @parameter
-	 * @required
 	 */
 	private List<String> files;
+
+    /**
+     * @parameter
+     */
+    private List<String> resources;
 
 	/**
 	 * @parameter
@@ -64,7 +73,7 @@ public class ProcessTemplateFilesMojo extends AbstractMojo {
 	private Map<String, Object> symbols;
 
 	public void execute() throws MojoExecutionException {
-		if (this.files == null || this.files.isEmpty()) {
+		if ((this.files == null || this.files.isEmpty()) && (this.resources == null || this.resources.isEmpty())) {
 			return;
 		}
 
@@ -98,28 +107,63 @@ public class ProcessTemplateFilesMojo extends AbstractMojo {
 		}
 
 		GStringTemplateEngine templateEngine = new GStringTemplateEngine();
-		for (String path : this.files) {
-			File file = new File(path);
-			if (!file.exists()) {
-				throw new MojoExecutionException("File " + file + " does not exist.");
-			}
-			if (!file.isFile()) {
-				throw new MojoExecutionException("File " + file + " is not a valid template file.");
-			}
-			try {
-				File outputFile = new File(this.outputDirectory, file.getName());
-				Template template = templateEngine.createTemplate(file);
-				Writable writable = template.make(this.symbols);
-				FileWriter outputWriter = new FileWriter(outputFile);
-				writable.writeTo(outputWriter);
-				outputWriter.close();
-			} catch (CompilationFailedException ex) {
-				throw new MojoExecutionException("Compilation error in " + file, ex);
-			} catch (ClassNotFoundException ex1) {
-				throw new MojoExecutionException("Compilation error in " + file, ex1);
-			} catch (IOException ex2) {
-				throw new MojoExecutionException("Error while reading/writing " + file.getName(), ex2);
-			}
-		}
-	}
+        if (this.files != null) {
+            for (String path : this.files) {
+                File file = new File(path);
+                if (!file.exists()) {
+                    throw new MojoExecutionException("File " + file + " does not exist.");
+                }
+
+                if (!file.isFile()) {
+                    throw new MojoExecutionException("File " + file + " is not a valid template file.");
+                }
+
+                FileInputStream inputStream = null;
+                try {
+                    inputStream = new FileInputStream(file);
+                    processInput(templateEngine, path, file.getName(), inputStream);
+                }
+                catch (FileNotFoundException e) {
+                    throw new MojoExecutionException("Can't read file " + file, e);
+                } finally {
+                    IOUtils.closeQuietly(inputStream);
+                }
+            }
+        }
+
+        if (this.resources != null) {
+            for (String resourcePath : this.resources) {
+                String fileName = new File(resourcePath).getName();
+                final InputStream inputStream = getClass().getClassLoader().
+                    getResourceAsStream(resourcePath);
+                if (inputStream == null) {
+                    throw new MojoExecutionException(resourcePath + " does not exist.");
+                }
+
+                try {
+                    processInput(templateEngine, resourcePath, fileName, inputStream);
+                }
+                finally {
+                    IOUtils.closeQuietly(inputStream);
+                }
+            }
+        }
+    }
+
+    private void processInput(GStringTemplateEngine templateEngine, String path, String fileName, InputStream resourceAsStream) throws MojoExecutionException {
+        try {
+            File outputFile = new File(this.outputDirectory, fileName);
+            Template template = templateEngine.createTemplate(new InputStreamReader(resourceAsStream));
+            Writable writable = template.make(this.symbols);
+            FileWriter outputWriter = new FileWriter(outputFile);
+            writable.writeTo(outputWriter);
+            outputWriter.close();
+        } catch (CompilationFailedException ex) {
+            throw new MojoExecutionException("Compilation error in " + path, ex);
+        } catch (ClassNotFoundException ex1) {
+            throw new MojoExecutionException("Error processing " + path, ex1);
+        } catch (IOException ex2) {
+            throw new MojoExecutionException("Error while reading/writing " + fileName, ex2);
+        }
+    }
 }

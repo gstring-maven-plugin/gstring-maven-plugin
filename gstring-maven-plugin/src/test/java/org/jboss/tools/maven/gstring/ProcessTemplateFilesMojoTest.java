@@ -44,6 +44,29 @@ public class ProcessTemplateFilesMojoTest extends AbstractMojoTestCase {
         stream.close();
 	}
 
+    @Test
+    public void testTemplateFromResource() throws Exception {
+        File pom = getTestFile( "src/test/resources/pom-testResourceTemplate.xml" );
+        assertNotNull( pom );
+        assertTrue( pom.exists() );
+
+        ProcessTemplateFilesMojo myMojo = (ProcessTemplateFilesMojo) lookupMojo( "process-templates", pom );
+        assertNotNull( myMojo );
+        myMojo.execute();
+
+        File outputFile = getTestFile("target/testOutput/template.txt");
+        FileInputStream stream = new FileInputStream(outputFile);
+        byte[] bytes = new byte[(int)outputFile.length()];
+        stream.read(bytes);
+        String outputText = new String(bytes);
+        Assert.assertEquals(
+            "Hello world !\n" +
+                "Hello WORLD !\n\n" +
+                "Hello WORLD (from a closure) !",
+            outputText);
+        stream.close();
+    }
+
 	@Test
 	public void testBadTemplatePath() throws Exception {
 		File pom = getTestFile( "src/test/resources/pom-testBadTemplatePath.xml" );
