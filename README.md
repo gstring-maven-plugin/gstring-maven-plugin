@@ -29,7 +29,7 @@ In your pom.xml:
 		<plugin>
 			<groupId>org.jboss.tools.maven</groupId>
 			<artifactId>gstring-maven-plugin</artifactId>
-			<version>1.0.0</version>
+			<version>1.1.0</version>
 			<executions>
 				<execution>
 					<id>create-results-html</id>
